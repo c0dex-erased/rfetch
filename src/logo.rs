@@ -1,2 +1,34 @@
-use std::{fs, path::PathBuf};
-pub fn get(kind:&str, custom:&str, id:&str, like:&str)->String { if !custom.is_empty(){if let Ok(s)=fs::read_to_string(custom){return s}} let names=if kind!="auto"{vec![kind.to_string()]}else{std::iter::once(id.to_string()).chain(like.split_whitespace().map(str::to_string)).collect()}; for n in names {let key=match n.as_str(){"arch"=>"arch","debian"=>"debian","ubuntu"=>"ubuntu","fedora"=>"fedora","gentoo"=>"gentoo","opensuse"|"opensuse-leap"|"opensuse-tumbleweed"=>"opensuse","void"=>"void","alpine"=>"alpine",_=>continue}; let p=PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logos").join(format!("{key}.txt")); if let Ok(s)=fs::read_to_string(p){return s} } fs::read_to_string(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("logos/default.txt")).unwrap_or_else(|_|"rfetch".into()) }
+use std::fs;
+
+pub fn get(kind: &str, custom: &str, id: &str, like: &str) -> String {
+    if !custom.is_empty() {
+        if let Ok(logo) = fs::read_to_string(custom) {
+            return logo;
+        }
+    }
+
+    let names: Vec<&str> = if kind != "auto" {
+        vec![kind]
+    } else {
+        std::iter::once(id).chain(like.split_whitespace()).collect()
+    };
+
+    for name in names {
+        let logo = match name {
+            "arch" => include_str!("../logos/arch.txt"),
+            "debian" => include_str!("../logos/debian.txt"),
+            "ubuntu" => include_str!("../logos/ubuntu.txt"),
+            "fedora" => include_str!("../logos/fedora.txt"),
+            "gentoo" => include_str!("../logos/gentoo.txt"),
+            "opensuse" | "opensuse-leap" | "opensuse-tumbleweed" => {
+                include_str!("../logos/opensuse.txt")
+            }
+            "void" => include_str!("../logos/void.txt"),
+            "alpine" => include_str!("../logos/alpine.txt"),
+            _ => continue,
+        };
+        return logo.to_string();
+    }
+
+    include_str!("../logos/default.txt").to_string()
+}
