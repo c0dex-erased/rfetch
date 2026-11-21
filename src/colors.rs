@@ -1,0 +1,1 @@
+pub fn paint(text: &str, name: &str, enabled: bool) -> String { if !enabled { return text.into(); } let code=match name {"black"=>30,"red"=>31,"green"=>32,"yellow"=>33,"blue"=>34,"magenta"=>35,"cyan"=>36,"white"=>37,"bright_black"=>90,_=>37}; format!("\x1b[{code}m{text}\x1b[0m") }

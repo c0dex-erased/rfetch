@@ -1,0 +1,6 @@
+use std::{collections::HashMap, fs};
+pub fn os_release()->HashMap<String,String>{ let mut m=HashMap::new(); if let Ok(s)=fs::read_to_string("/etc/os-release") { for line in s.lines() { if let Some((k,v))=line.split_once('=') { m.insert(k.into(),v.trim_matches('"').into()); } } } m }
+pub fn read(path:&str)->String { fs::read_to_string(path).unwrap_or_default().trim().to_string() }
+pub fn cpu()->String { read("/proc/cpuinfo").lines().find_map(|l|l.strip_prefix("model name\t: ").or_else(||l.strip_prefix("Hardware\t: "))).unwrap_or("Unknown").into() }
+pub fn memory()->String { let s=read("/proc/meminfo"); let val=|key:&str|s.lines().find(|l|l.starts_with(key)).and_then(|l|l.split_whitespace().nth(1)).and_then(|v|v.parse::<u64>().ok()).unwrap_or(0); let total=val("MemTotal:"); let avail=val("MemAvailable:"); let gib=1048576.0; format!("{:.2} GiB / {:.2} GiB",total.saturating_sub(avail) as f64/gib,total as f64/gib) }
+pub fn uptime()->String { let sec=read("/proc/uptime").split_whitespace().next().and_then(|s|s.parse::<f64>().ok()).unwrap_or(0.0) as u64; let hours=sec/3600; let minutes=(sec/60)%60; format!("{hours} {} {minutes} {}",if hours==1{"hour"}else{"hours"},if minutes==1{"minute"}else{"minutes"}) }
