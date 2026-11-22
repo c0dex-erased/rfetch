@@ -2,6 +2,10 @@
 
 Minimalist Linux system information CLI written in Rust. Version 0.1.0 targets Linux x86_64 and uses `/etc/os-release`, `/proc`, and environment variables; it does not invoke shell commands or access the network at runtime.
 
+## Preview
+
+![rfetch running in a terminal](assets/rfetch.png)
+
 ## Build and run
 
 ```sh
